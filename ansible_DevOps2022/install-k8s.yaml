@@ -1,0 +1,102 @@
+---
+- hosts: k8s
+  become: yes
+  remote_user: ec2-user
+  become_user: root
+  tasks:
+  - name: Add kubeadm repositories on Master Node
+    yum_repository:
+      name: kube
+      description: Kubernetes repo
+      baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+      enabled: 1
+      gpgcheck: 1
+      gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+  - name: Add docker-ce.repo repository
+    shell: yum-config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    args:
+      creates: /etc/yum.repos.d/docker-ce.repo
+  
+  - name: Installing Docker on Master Node
+    package:
+      name:
+        - docker-ce
+        - kubeadm
+        - iproute-tc
+      state: present
+
+  - name: Staring & enabling Docker on Master Node
+    service:
+      name: "docker"
+      state: started
+      enabled: yes
+
+  - name: Staring & enabling kubelet on Master Node
+    service:
+      name: "kubelet"
+      state: started
+      enabled: yes
+
+  - name: Remove containerd config.toml
+    file: 
+      path: /etc/containerd/config.toml 
+      state: absent
+
+  - name: Restart containerd
+    service:
+      name: containerd
+      state: restarted
+
+  - name: Pulling the images of k8s master
+    command: kubeadm config images pull
+
+  - name: Updating Docker cgroup on Master Node
+    copy:
+      dest: /etc/docker/daemon.json
+      content: |
+        {
+        "exec-opts": ["native.cgroupdriver=systemd"]
+        }
+ 
+  - name: Restart docker on Master Node
+    service:
+      name: docker
+      state: restarted
+
+  - name: Initializing k8s cluster
+    command: kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem
+  
+  - name: Sleep for 3 minutes and timeout
+    tags: sleep300
+    wait_for:
+      delay: 180
+      timeout: 0
+
+  - name: Creating directory for kubectl
+    file:
+      path: /home/ec2-user/.kube
+      state: directory
+      owner: ec2-user
+      group: ec2-user
+      mode: 0775
+
+  - name: Setting up kubectl on Master Node
+    shell: 
+      cmd: |
+        cp -i /etc/kubernetes/admin.conf /home/ec2-user/.kube/config
+        chown ec2-user:ec2-user /home/ec2-user/.kube/config
+  # - name: Enabling scheduling pods on Master Node
+  #   command: "kubectl taint nodes --all node-role.kubernetes.io/master-"
+  #   become_user: ec2-user
+
+  - name: Enabling scheduling pods on Master Node
+    command: "kubectl taint nodes --all node-role.kubernetes.io/control-plane-"
+    become_user: ec2-user
+
+  - name: Deploying Flannel on Master Node
+    command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    become_user: ec2-user
+
+  - name: Cleaning Caches on RAM
+    shell: echo 3 > /proc/sys/vm/drop_caches

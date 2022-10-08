@@ -1,0 +1,6 @@
+[hosts]
+k8s ansible_host=172.16.0.138
+jenkins ansible_host=172.16.0.212
+
+[all:vars]
+ansible_ssh_private_key_file=~/ansible_DevOps2022/ssh-key.pem
