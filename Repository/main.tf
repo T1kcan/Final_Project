@@ -5,7 +5,7 @@ provider "github" {
 locals {
   github-email    = "tbincan@gmail.com"    # you need to change this line
   github-username = "T1kcan"               # you need to change this line
-  github-token    = file("github_token.txt") # you need to change this line
+  github-token    = "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" # you need to change this line
 }
 
 resource "github_repository" "githubrepo" {
