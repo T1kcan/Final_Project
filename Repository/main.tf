@@ -9,7 +9,7 @@ locals {
 }
 
 resource "github_repository" "githubrepo" {
-  name       = "Final_Project"
+  name       = "Final_Project_2022"
   visibility = "public"
   auto_init  = true
 }

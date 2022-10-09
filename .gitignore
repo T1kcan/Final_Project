@@ -9,7 +9,7 @@
 *.hcl
 .terraform.lock
 github_token.txt
-*.pem
+Makefile
 
 
 

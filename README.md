@@ -40,6 +40,10 @@ $ terraform init
 $ terraform fmt --diff --check --recursive
 $ terraform apply --auto-approve
 ```
+## Github Repository
+
+A public Github Repository is to be cretaed. Thence you need to modify values on main.tf `github-emmail` ,`github-username` and `github-token` in /Repository Module's local variables and put your own values.
+
 ## Ansible Server
 
 Don't forget to change Redhat Subscription Manager settings:
@@ -82,11 +86,16 @@ Post steps:
    docker build -t tbincan/final_project:1.0 .
    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
    docker push tbincan/final_project:1.0
-Send files or execute commands over SSH: ansible ip/dnsname ; cd /home/ec2-user/ansible_DevOps2022; ansible-playbook install-java-app.yml -i inventory
-
+Send files or execute commands over SSH: 
+```text
+ansible ip/dnsname ; cd /home/ec2-user/ansible_DevOps2022; ansible-playbook install-java-app.yml -i inventory
+```
 ## Kubernetes Server
 Make sure that Control Plane is set to run pods: kubectl taint nodes --all node-role.kubernetes.io/control-plane-
-Publish web application through port forward: kubectl port-forward service/java-app 8080:8080 --address 0.0.0.0
+Publish web application through port forward: 
+```bash
+kubectl port-forward service/java-app 8080:8080 --address 0.0.0.0
+```
 
 ## Parameters for Configuration
 | Variable Name | Description | Type | Default Value
