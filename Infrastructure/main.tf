@@ -131,7 +131,7 @@ resource "aws_instance" "type-2" {
   count                  = var.num_of_instance
   subnet_id              = aws_subnet.subnet1.id
   vpc_security_group_ids = [aws_security_group.sg-tf.id]
-  key_name = var.keyy_name
+  key_name               = var.keyy_name
   tags = {
     "Name" = "Terraform ${element(var.type2-tag, count.index)} Instance"
   }
@@ -146,7 +146,7 @@ resource "aws_instance" "type-2" {
   provisioner "file" {
     content     = self.public_ip
     destination = "/home/ec2-user/my_public_ip.txt"
-    on_failure = continue
+    on_failure  = continue
   }
 }
 

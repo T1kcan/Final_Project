@@ -26,5 +26,5 @@ output "Github_Repository_URL" {
   value = module.github_repo.github-url
 }
 output "ansible_connection" {
-  value = "ssh -i ssh-key.pem ec2-user@${module.infrastructure.Ansible_instance-pub_ip2}"
+  value = "ssh -i ssh-key.pem ec2-user@${module.infrastructure.Ansible_instance_pub_ip}"
 }

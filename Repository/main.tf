@@ -3,9 +3,9 @@ provider "github" {
 }
 
 locals {
-  github-email    = "tbincan@gmail.com"    # you need to change this line
-  github-username = "T1kcan"               # you need to change this line
-  github-token    = file("github_token.txt") # you need to change this line
+  github-email    = "" # you need to change this line
+  github-username = "" # you need to change this line
+  github-token    = "" # you need to change this line
 }
 
 resource "github_repository" "githubrepo" {
